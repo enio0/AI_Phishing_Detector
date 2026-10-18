@@ -26,8 +26,16 @@ if st.button("Analyze Email"):
         # Predict the email category
         prediction = model.predict(email_tfidf)[0]
 
+        # Calculate the probability of a suspicious email
+        probability = model.predict_proba(email_tfidf)[0][1]
+
         # Display the result
         if prediction == 1:
             st.error("Suspicious email detected!")
         else:
             st.success("Email classified as legitimate.")
+
+        # Display probability
+        st.write(f"Estimated probability of suspicious email: {probability:.2%}")
+
+st.caption("This model was trained on historical email data. A legitimate prediction does not guarantee an email is safe.")
