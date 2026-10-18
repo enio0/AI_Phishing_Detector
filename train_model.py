@@ -1,6 +1,9 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.linear_model import LogisticRegression
+import joblib
 
 # Load our dataset
 df = pd.read_csv("data/CEAS_08.csv")
@@ -29,3 +32,33 @@ X_test_tfidf = vectorizer.transform(X_test)
 
 print("Training matrix:", X_train_tfidf.shape)
 print("Testing matrix:", X_test_tfidf.shape)
+
+
+# Create our model
+model = LogisticRegression(max_iter=1000)
+
+# Train our model
+model.fit(X_train_tfidf, y_train)
+
+# Make predictions
+predictions = model.predict(X_test_tfidf)
+
+
+
+# Evaluate our model
+accuracy = accuracy_score(y_test, predictions)
+
+print("\nMODEL ACCURACY:")
+print(accuracy)
+
+print("\nCLASSIFICATION REPORT:")
+print(classification_report(y_test, predictions))
+
+print("\nCONFUSION MATRIX:")
+print(confusion_matrix(y_test, predictions))
+
+# Save our trained model and TF-IDF vectorizer
+joblib.dump(model, "model.joblib")
+joblib.dump(vectorizer, "vectorizer.joblib")
+
+print("\nModel and vectorizer saved successfully!")
