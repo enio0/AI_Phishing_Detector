@@ -11,17 +11,22 @@ from url_analyser import (
 )
 
 
-# Load our model
-model = joblib.load("model.joblib")
-vectorizer = joblib.load("vectorizer.joblib")
-
-
 # Page settings
 st.set_page_config(
     page_title="AI Phishing Detector",
     page_icon="🛡️",
     layout="centered"
 )
+
+
+# Load our trained model and vectorizer
+try:
+    model = joblib.load("model.joblib")
+    vectorizer = joblib.load("vectorizer.joblib")
+
+except FileNotFoundError:
+    st.error("Model files not found. Please run train_model.py first.")
+    st.stop()
 
 
 # Header
@@ -38,17 +43,23 @@ email = st.text_area(
 )
 
 
+# Analyze button
 if st.button("Analyze Email", type="primary"):
 
     if not email.strip():
         st.warning("Please enter an email.")
 
     else:
-        # Machine learning prediction
+        # Convert email text into numbers
         email_tfidf = vectorizer.transform([email])
+
+        # Make prediction
         prediction = model.predict(email_tfidf)[0]
+
+        # Calculate suspicious probability
         probability = model.predict_proba(email_tfidf)[0][1]
 
+        # Display email analysis
         st.subheader("Email Analysis")
 
         if prediction == 1:
@@ -76,8 +87,11 @@ if st.button("Analyze Email", type="primary"):
             st.write(f"URLs found: {len(urls)}")
 
             for url in urls:
+
+                # Display URL without making it clickable
                 st.code(url, language=None)
 
+                # Display actual hostname
                 domain = get_domain(url)
                 st.write("Actual destination hostname:", domain)
 
@@ -103,8 +117,9 @@ if st.button("Analyze Email", type="primary"):
 
                 st.divider()
 
-        # Summary
+        # Security summary
         st.subheader("Security Summary")
+
         st.metric("URL warning indicators", warnings_count)
 
         if warnings_count > 0:
