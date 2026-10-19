@@ -33,6 +33,9 @@ def check_fake_domain(url):
 
     return False
 
+def check_at_symbol(url):
+    return "@" in urlparse(url).netloc
+
 
 # Check if a URL uses an IP address
 def check_ip_address(url):
@@ -48,8 +51,6 @@ def check_ip_address(url):
         return False
 
 
-
-print(check_fake_domain("https://www.paypal.com/login"))
-print(check_fake_domain("https://paypal.com.security-check.example"))
-print(check_fake_domain("https://micros0ft-login.example"))
-print(check_fake_domain("https://accounts.google.com"))
+print(check_at_symbol("https://paypal.com@attacker.example/login"))
+print(check_at_symbol("https://www.paypal.com/login"))
+print(check_at_symbol("https://user@example.com/profile"))

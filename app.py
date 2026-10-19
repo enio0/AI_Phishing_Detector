@@ -2,7 +2,13 @@
 import streamlit as st
 import joblib
 
-from url_analyser import extract_urls, check_ip_address, check_fake_domain
+from url_analyser import (
+    extract_urls,
+    check_ip_address,
+    check_fake_domain,
+    check_at_symbol,
+    get_domain
+)
 
 
 # Load our trained model and vectorizer
@@ -33,7 +39,7 @@ if st.button("Analyze Email"):
         # Predict the email category
         prediction = model.predict(email_tfidf)[0]
 
-        # Calculate probability of a suspicious email
+        # Calculate the suspicious email probability
         probability = model.predict_proba(email_tfidf)[0][1]
 
         # Display email analysis
@@ -44,9 +50,11 @@ if st.button("Analyze Email"):
         else:
             st.success("Email classified as legitimate.")
 
-        st.write(f"Estimated probability of suspicious email: {probability:.2%}")
+        st.write(
+            f"Estimated probability of suspicious email: {probability:.2%}"
+        )
 
-        # Extract URLs from the email
+        # Extract URLs
         urls = extract_urls(email)
 
         st.subheader("URL Analysis")
@@ -56,19 +64,34 @@ if st.button("Analyze Email"):
 
         else:
             for url in urls:
-                st.write("URL:", url)
 
-                # Check for IP address
-                if check_ip_address(url):
+                # Display the URL as text, not a clickable link
+                st.code(url, language=None)
+
+                # Display the actual destination hostname
+                domain = get_domain(url)
+                st.write("Actual destination hostname:", domain)
+
+                # Check for suspicious characteristics
+                ip_warning = check_ip_address(url)
+                fake_domain_warning = check_fake_domain(url)
+                at_warning = check_at_symbol(url)
+
+                if ip_warning:
                     st.warning("Warning: This URL uses an IP address.")
 
-                # Check for domain impersonation
-                if check_fake_domain(url):
-                    st.warning("Warning: Possible domain impersonation detected!")
+                if fake_domain_warning:
+                    st.warning(
+                        "Warning: Possible domain impersonation detected!"
+                    )
 
-                # No suspicious patterns found
-                if not check_ip_address(url) and not check_fake_domain(url):
-                    st.write("No suspicious URL patterns detected.")
+                if at_warning:
+                    st.warning(
+                        "Warning: URL contains an @ symbol in its address!"
+                    )
+
+                if not ip_warning and not fake_domain_warning and not at_warning:
+                    st.info("No suspicious URL patterns detected.")
 
 
 st.caption(
