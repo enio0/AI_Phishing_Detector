@@ -36,5 +36,20 @@ class TestURLAnalyser(unittest.TestCase):
         self.assertEqual(domain, "attacker.example")
 
 
+    def test_url_punctuation(self):
+        email = "Visit https://example.com/login. Thank you!"
+        urls = extract_urls(email)
+        self.assertEqual(urls[0], "https://example.com/login")
+
+
+
+
+
+    def test_improved_fake_domains(self):
+        self.assertTrue(check_fake_domain("https://paypa1.example"))
+        self.assertTrue(check_fake_domain("https://paypal-login.example"))
+        self.assertTrue(check_fake_domain("https://google.com.attacker.example"))
+        self.assertFalse(check_fake_domain("https://www.paypal.com"))
+
 if __name__ == "__main__":
     unittest.main()

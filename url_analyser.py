@@ -8,7 +8,14 @@ from urllib.parse import urlparse
 def extract_urls(email):
     pattern = r'https?://[^\s<>"\']+'
     urls = re.findall(pattern, email)
-    return urls
+
+    clean_urls = []
+
+    for url in urls:
+        url = url.rstrip(".,;!?")
+        clean_urls.append(url)
+
+    return clean_urls
 
 
 def get_domain(url):
@@ -23,12 +30,20 @@ def check_fake_domain(url):
     if domain is None:
         return False
 
-    if "paypal.com" in domain and not (
-        domain == "paypal.com" or domain.endswith(".paypal.com")
-    ):
-        return True
+    # Known brand domains
+    brands = {
+        "paypal": "paypal.com",
+        "google": "google.com",
+        "microsoft": "microsoft.com"
+    }
 
-    if "micros0ft" in domain:
+    for brand, official in brands.items():
+        if brand in domain:
+            if domain != official and not domain.endswith("." + official):
+                return True
+
+    # Common imitation examples
+    if "paypa1" in domain or "micros0ft" in domain:
         return True
 
     return False
@@ -51,3 +66,7 @@ def check_ip_address(url):
         return False
 
 
+print(check_fake_domain("https://paypa1.example"))
+print(check_fake_domain("https://paypal-login.example"))
+print(check_fake_domain("https://google.com.attacker.example"))
+print(check_fake_domain("https://www.paypal.com"))
