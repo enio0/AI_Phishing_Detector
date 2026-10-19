@@ -51,6 +51,3 @@ def check_ip_address(url):
         return False
 
 
-print(check_at_symbol("https://paypal.com@attacker.example/login"))
-print(check_at_symbol("https://www.paypal.com/login"))
-print(check_at_symbol("https://user@example.com/profile"))
