@@ -51,5 +51,40 @@ class TestURLAnalyser(unittest.TestCase):
         self.assertTrue(check_fake_domain("https://google.com.attacker.example"))
         self.assertFalse(check_fake_domain("https://www.paypal.com"))
 
+
+    
+    def test_uppercase_domain(self):
+        self.assertTrue(
+            check_fake_domain("https://PAYPAL-LOGIN.example")
+        )
+
+    def test_misleading_google_url(self):
+        url = "https://google.com@attacker.example/login"
+
+        self.assertEqual(get_domain(url), "attacker.example")
+        self.assertTrue(check_at_symbol(url))
+
+    def test_multiple_url_extraction(self):
+        email = """
+        Visit https://google.com.
+        Or http://192.0.2.10/login!
+        """
+
+        urls = extract_urls(email)
+
+        self.assertEqual(urls, [
+            "https://google.com",
+            "http://192.0.2.10/login"
+    ])
+
+    def test_combined_url_checks(self):
+        url = "https://paypal-login.example@google.com/account"
+
+        self.assertEqual(get_domain(url), "google.com")
+        self.assertTrue(check_at_symbol(url))
+        self.assertFalse(check_fake_domain(url))
+        self.assertFalse(check_ip_address(url))
+
+
 if __name__ == "__main__":
     unittest.main()
