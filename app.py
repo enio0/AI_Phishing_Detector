@@ -11,7 +11,7 @@ from url_analyser import (
 )
 
 
-# Page settings
+# Page
 st.set_page_config(
     page_title="AI Phishing Detector",
     page_icon="🛡️",
@@ -50,16 +50,14 @@ if st.button("Analyze Email", type="primary"):
         st.warning("Please enter an email.")
 
     else:
-        # Convert email text into numbers
+        #convert email text into numbers
         email_tfidf = vectorizer.transform([email])
 
-        # Make prediction
+        #prediction
         prediction = model.predict(email_tfidf)[0]
 
-        # Calculate suspicious probability
+        #calculate suspicious probability
         probability = model.predict_proba(email_tfidf)[0][1]
-
-        # Display email analysis
         st.subheader("Email Analysis")
 
         if prediction == 1:
@@ -90,8 +88,6 @@ if st.button("Analyze Email", type="primary"):
 
                 # Display URL without making it clickable
                 st.code(url, language=None)
-
-                # Display actual hostname
                 domain = get_domain(url)
                 st.write("Actual destination hostname:", domain)
 

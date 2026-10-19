@@ -208,6 +208,10 @@ The model performed extremely well on the original random test split.
 
 However, these results do not establish real-world phishing detection accuracy.
 
+### Model Accuracy Comparison
+
+![Model Accuracy Comparison](plots/model_accuracy.png)
+
 ### External Dataset — Nazario_5
 
 To investigate generalization, the saved model was tested on a second dataset without retraining.

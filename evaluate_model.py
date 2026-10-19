@@ -5,8 +5,6 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 
 # Load the new dataset
 df = pd.read_csv("data/Nazario_5.csv")
-
-# Examine its structure
 print("DATASET SIZE:")
 print(df.shape)
 
